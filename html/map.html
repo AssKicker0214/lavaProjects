@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>google map demo</title>
+    <link rel="stylesheet" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/mauna-map.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/map.css">
+</head>
+<body>
+<!--AIzaSyAieesDJ0-GkPTjnvLyULP4Bhep68xvUFw-->
+<!--<div id="map" style="width: 1000px; height: 700px">-->
+
+<!--</div>-->
+<div id="map-wrapper">
+    <div id="cover-layer">
+        <!--中央十字定位-->
+        <div class="cross">
+            <span class="fa fa-plus cross-center">+</span>
+        </div>
+
+        <!--左上方地点选择-->
+        <div class="top_menu select">
+            <div class="navigation_title form-group has-feedback">
+                <span class="select-arrow" style="top:12px;right:5px"></span>
+                <input type="text" onclick="navigationController.cityClick();" class="form-control"
+                       id="navigation_input" readonly
+                       style="background: #fff;padding:0;padding-left:5px;padding-right:5px;height:26px; line-height: 26px; min-width: 70px;">
+            </div>
+            <div class="search_place form-group">
+                <input type="text" class="form-control" id="tip_input" placeholder="地点"
+                       style="padding-left:5px;height:26px; line-height: 26px; width:84px;"
+                       onfocus="searchInput.onFocus();"
+                       onblur="searchInput.onBlur();">
+                <i class="input-clear-icon"
+                   style="display:none;position: absolute;top:4px; right: calc(0% + 22px);"></i>
+                <i class="input-search-icon" style="position: absolute;top:4px; right: calc(0% + 49px);"></i>
+            </div>
+        </div>
+        <div class="navigation_modal card-div-border">
+            <div class="table-toolbar" style="margin: 10px 0 0 6px;"></div>
+            <div class="navigation_totle">
+                <div class="navigation_city">
+                    <div class="row">
+                        <div class="col-md-2" style="margin-left: 30px;padding: 0;color: #979CA6;">常用城市</div>
+                        <div class="col-md-8" style="padding: 0;margin-left: -25px">
+                            <ul class="frequently_used_city" style="padding: 0;">
+                                <li onclick="mapController.selectCity(this)" data-zoom="4" data-center="110.595009,34.950204">全国</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="116.405285,39.904989">北京</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="121.472644,31.231706">上海</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="113.280637,23.125178">广州</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="110.919229,21.659751">深圳</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="117.190182,39.125596">天津</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="101.716007,26.580446">成都</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="119.452753,32.204402">南京</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="120.153576,30.287459">杭州</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="114.298572,30.584355">武汉</li>
+                                <li onclick="mapController.selectCity(this)" data-zoom="12" data-center="120.102398,30.867198">湖州</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row city">
+                        <div class="col-md-4">
+                                <select id='province' class="select-selection" onchange='mapController.search(this, false)'></select>
+                        </div>
+                        <div class="col-md-4">
+                                <select id='city' class="select-selection" onchange='mapController.search(this, false)'></select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id='district' class="select-selection" onchange='mapController.search(this, true)'></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="navigation_marker" style="display: none;">
+                    <div id="marker_tree"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--右上方工具栏-->
+        <!--工具栏开关-->
+        <div class="switch_group" data-state="0">
+            <i class="map-icon map-menu" onclick="toolMenuController.buttonGroupSwitch.onClick();"></i>
+        </div>
+
+        <!--工具栏内容-->
+        <div class="button_group">
+            <ul id="tools">
+                <!--区域监控-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="区域监控"
+                    style="border-left: none;" data-picture="0" class="region_selection" data-state="0"><i
+                        class="map-icon map-region"></i></li>
+
+                <!--添加地图标注-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="添加地图标注"
+                    data-picture="0" class="make_marker"><i class="map-icon map-pushpin"></i></li>
+
+                <!--我的视野-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="我的视野"
+                    data-picture="0" class="view_point"><i class="map-icon map-view"></i>
+                    <div class="views_window">
+                        <div style="background-color: #EDEDED;padding: 0;margin-left: 1px;">
+                            <div class="views_row">
+                                <input type="text" class="form-control view_point_name">
+                                <i class="views_add map_plus"></i>
+                            </div>
+                        </div>
+                        <div class="views_div">
+                        </div>
+                    </div>
+                </li>
+
+                <!--距离测量-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="距离测量"
+                    data-picture="0" class="ranging">
+                    <i class="map-icon map-rule"></i>
+                </li>
+
+                <!--采集位置-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="采集位置"
+                    data-picture="0" class="location" data-state="0">
+                    <i class="map-icon map-location"></i>
+                </li>
+
+                <!--显示控制-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="显示控制"
+                    data-picture="0" class="view_control">
+                    <i class="map-icon map-eye" onclick="displayController.click();"></i>
+                    <div class="tools_window" id="tools-window">
+                        <label class="tools-item i-checks">
+                            中心地址
+                            <input type="checkbox" onclick="mapController.displayItemClick(this);"
+                                   tool-name="center_position" id="center-position" checked>
+                        </label>
+                        <label class="tools-item i-checks">
+                            比例尺
+                            <input type="checkbox" onclick="mapController.displayItemClick(this);" tool-name="scale" id="scale" checked>
+                        </label>
+                        <label class="tools-item i-checks">
+                            级别工具
+                            <input type="checkbox" onclick="mapController.displayItemClick(this);" tool-name="toolbar" id="toolbar" checked>
+                        </label>
+                        <label class="tools-item i-checks">
+                            重叠提示
+                            <input type="checkbox" tool-name="overlap_warn" id="overlap-warn">
+                        </label>
+                        <label class="tools-item i-checks">
+                            车辆聚合
+                            <input type="checkbox" tool-name="cluster_car" id="cluster-car">
+                        </label>
+                        <label class="tools-item i-checks">
+                            标注聚合
+                            <input type="checkbox" tool-name="cluster_marker" id="cluster-marker">
+                        </label>
+                        <label class="tools-item i-checks">
+                            显示标注
+                            <input type="checkbox" tool-name="marker" id="marker" checked>
+                        </label>
+                    </div>
+                </li>
+
+                <!--地图来源-->
+                <li data-placement="auto bottom" data-toggle="tooltip" title="" data-original-title="地图来源"
+                    data-picture="0" class="map_source">
+                    <i class="map-icon map-map" onclick="sourceController.click();"></i>
+                    <div class="map_source_window" id="source-window">
+                        <label class="map-item i-checks">
+                            路况
+                            <input type="checkbox" tool-name="tileLayer">
+                        </label>
+                        <label class="map-item" id="gaode_map">
+                            高德地图
+                            <div class="map-toggle-container" style="display: none;">
+                                <div class="map-toggle-item map-source-map map-active" data-toggle-map="map">地图</div>
+                                <div class="map-toggle-item map-source-satel" data-toggle-map="satel">卫星</div>
+                            </div>
+                        </label>
+                        <label class="map-item" onclick="sourceController.sourceClick('google-map')">
+                            谷歌地图
+                        </label>
+                        <label class="map-item" onclick="sourceController.sourceClick('baidu-map')">
+                            百度地图
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="google-map" class="map-pane enable"></div>
+    <div id="gaode-map" class="map-pane"></div>
+    <div id="baidu-map" class="map-pane"></div>
+</div>
+<script>
+    function initMap() {
+        // Create a map object and specify the DOM element for display.
+//        var map = new google.maps.Map(document.getElementById('google-map'), {
+//            center: {lat: -34.397, lng: 150.644},
+//            scrollwheel: false,
+//            zoom: 8
+//        });
+//        alert("init");
+
+    }
+</script>
+<script src="../js/jquery-1.11.3.min.js"></script>
+<script src="../js/bootstrap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAieesDJ0-GkPTjnvLyULP4Bhep68xvUFw&callback=initMap"
+ async defer></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=TOTggDKBmmyZ5oQ1Zt2CQIorkPGymWeK"></script>
+<script src="http://webapi.amap.com/maps?v=1.3&amp;key=d9a5c21ad7c0d47a3b4de03deea5bd31&amp;plugin=AMap.MouseTool,AMap.Scale,AMap.OverView,AMap.ToolBar,AMap.Autocomplete,AMap.PlaceSearch,AMap.DistrictSearch"></script>
+<script src="http://webapi.amap.com/ui/1.0/main.js"></script>
+<script src="../js/AbstractMap.js"></script>
+<script src="../js/GoogleMap.js"></script>
+<script src="../js/BaiduMap.js"></script>
+<script src="../js/Submodel.js"></script>
+<script src="../js/Subcontroller.js"></script>
+<script src="../js/MapController.js"></script>
+
+<script>
+    baiduMap.init();
+
+    var sourceModel = new SourceModel();
+    var displayModel = new DisplayControlModel();
+    var navigationModel = new NavigationModel();
+
+    var sourceController = new SourceController(sourceModel);
+    var displayController = new DisplayController(displayModel);
+    var navigationController = new NavigationController(navigationModel);
+
+    AbstractMap.prototype.updateDisplayModel(displayModel);
+
+    var mapController = new MapController();
+
+    function initMap() {
+        googleMap.init(document.getElementById('google-map'), {
+            center: {lat: -34.397, lng: 150.644},
+            scrollwheel: false,
+            scaleControl: true,
+            scaleControlOptions:{
+                position: google.maps.ControlPosition.LEFT_BOTTOM
+            },
+            mapTypeControl: false,
+            streetViewControl: false,
+            zoom: 8
+        });
+
+        mapController.setMapModels([baiduMap, googleMap]);
+
+        sourceController.sourceClick("google-map");
+        mapController.sourceController = sourceController;
+        mapController.displayController = displayController;
+        mapController.navigationController = navigationController;
+
+        mapController.init();
+        console.log("api loaded successfully");
+    }
+
+
+</script>
+</body>
+</html>
